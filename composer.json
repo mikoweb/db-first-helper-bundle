@@ -1,0 +1,22 @@
+{
+    "name": "mikoweb/db-first-helper-bundle",
+    "type": "symfony-bundle",
+    "description": "Database First Helper Bundle",
+    "homepage": "http://mikoweb.pl",
+    "license": "LGPLv3",
+    "authors": [
+        {
+            "name": "Rafał Mikołajun",
+            "email": "rafal@mikoweb.pl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "symfony/symfony": "~3.0",
+        "symfony/console": "~3.0"
+    },
+    "autoload": {
+        "psr-4": { "Mikoweb\\Bundle\\DbFirstHelperBundle\\": "" }
+    }
+}
