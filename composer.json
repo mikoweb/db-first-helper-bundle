@@ -2,19 +2,20 @@
     "name": "mikoweb/db-first-helper-bundle",
     "type": "symfony-bundle",
     "description": "Database First Helper Bundle",
-    "homepage": "http://mikoweb.pl",
+    "homepage": "https://rmweb.pl",
     "license": "LGPLv3",
     "authors": [
         {
             "name": "Rafał Mikołajun",
-            "email": "rafal@mikoweb.pl",
+            "email": "root@rmweb.pl",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.5.9",
-        "symfony/symfony": "~3.0",
-        "symfony/console": "~3.0"
+        "php": "^7.1.3",
+        "symfony/console": "^4.0",
+        "symfony/framework-bundle": "^4.0",
+        "symfony/orm-pack": "*"
     },
     "autoload": {
         "psr-4": { "Mikoweb\\Bundle\\DbFirstHelperBundle\\": "" }

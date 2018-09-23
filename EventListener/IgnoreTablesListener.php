@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) Rafał Mikołajun <rafal@mikoweb.pl>
+ * (c) Rafał Mikołajun <root@rmweb.pl>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,7 +14,7 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 /**
  * Ignore tables for schema:update command.
  *
- * @author Rafał Mikołajun <rafal@mikoweb.pl>
+ * @author Rafał Mikołajun <root@rmweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
 class IgnoreTablesListener
