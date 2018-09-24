@@ -93,7 +93,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
      *
      * @return string
      */
-    protected function transformClassContent($content)
+    protected function transformClassContent(string $content): string
     {
         return $content;
     }
@@ -104,14 +104,14 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
      * @param string $entityDir
      * @param string $tableDir
      */
-    protected function doAfterImport($entityDir, $tableDir)
+    protected function doAfterImport(string $entityDir, string $tableDir): void
     {
     }
 
     /**
      * @return string
      */
-    protected function getBundleDirectory()
+    protected function getBundleDirectory(): string
     {
         return $this->getContainer()->get('kernel')->getRootDir() . '/../'
             . $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_directory');
@@ -120,7 +120,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
     /**
      * @return string
      */
-    protected function getBundleName()
+    protected function getBundleName(): string
     {
         return $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_name');
     }
@@ -128,7 +128,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
     /**
      * @return string
      */
-    protected function getBundleNamespace()
+    protected function getBundleNamespace(): string
     {
         return $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_namespace');
     }
