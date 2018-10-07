@@ -1,0 +1,4 @@
+mikoweb_db_first_helper:
+    bundle_directory: src
+    bundle_name: AppBundle
+    bundle_namespace: App
