@@ -29,9 +29,11 @@ class MikowebDbFirstHelperExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $container->setParameter('mikoweb_db_first_helper.bundle_directory', $config['bundle_directory']);
-        $container->setParameter('mikoweb_db_first_helper.bundle_name', $config['bundle_name']);
-        $container->setParameter('mikoweb_db_first_helper.bundle_namespace', $config['bundle_namespace']);
+
+        $container->setParameter('mikoweb_db_first_helper.base_path', $config['base_path']);
+        $container->setParameter('mikoweb_db_first_helper.entity_folder', $config['entity_folder']);
+        $container->setParameter('mikoweb_db_first_helper.base_namespace', $config['base_namespace']);
+        $container->setParameter('mikoweb_db_first_helper.force_update', $config['force_update']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
