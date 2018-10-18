@@ -9,6 +9,7 @@
 
 namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 
+use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,7 +41,8 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
             'name' => $this->getEntityNamespace(),
             'mapping-type' => 'annotation',
             '--path' => $this->getEntityPath(),
-            '--force' => true,
+            '--force' => $this->isForceUpdate(),
+            '--em' => $this->getConnection(),
         ]), $output);
 
         if ($returnCode !== 0) {
@@ -81,9 +83,14 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
     {
     }
 
+    protected function getParameter(string $name)
+    {
+        return $this->getContainer()->getParameter(Configuration::ROOT_NAME . '.' . $name);
+    }
+
     protected function getBasePath(): string
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.base_path');
+        return $this->getParameter('base_path');
     }
 
     protected function getPath(string $path): string
@@ -98,12 +105,12 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
 
     protected function getBaseNamespace(): string
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.base_namespace');
+        return $this->getParameter('base_namespace');
     }
 
     protected function getEntityFolder(): string
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.entity_folder');
+        return $this->getParameter('entity_folder');
     }
 
     protected function getEntityPath(): string
@@ -120,6 +127,11 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
 
     protected function isForceUpdate(): bool
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.force_update');
+        return $this->getParameter('force_update');
+    }
+
+    protected function getConnection(): string
+    {
+        return $this->getParameter('connection');
     }
 }

@@ -20,13 +20,15 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    const ROOT_NAME = 'mikoweb_db_first_helper';
+
     /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('mikoweb_db_first_helper');
+        $rootNode = $treeBuilder->root(self::ROOT_NAME);
 
         $rootNode
             ->children()
@@ -45,6 +47,10 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('force_update')
                     ->cannotBeEmpty()
                     ->defaultTrue()
+                ->end()
+                ->scalarNode('connection')
+                    ->cannotBeEmpty()
+                    ->defaultValue('default')
                 ->end()
             ->end()
         ;
