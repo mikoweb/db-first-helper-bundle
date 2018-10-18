@@ -4,29 +4,20 @@
 
 Requires composer, install as follows:
 
-    composer require mikoweb/db-first-helper-bundle
+    composer req mikoweb/db-first-helper-bundle
 
 ## Usage
 
 Create command class inside your bundle, eg.
 
 ```php
-namespace App\DatabaseBundle\Command;
+namespace App\Command;
 
 use Mikoweb\Bundle\DbFirstHelperBundle\Command\ImportDatabaseCommandAbstract;
 
-class ImportDatabaseCommand extends ImportDatabaseCommandAbstract
+class DatabaseImportCommand extends ImportDatabaseCommandAbstract
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
-    {
-        $this
-            ->setName('app:database:import')
-            ->setDescription('Import database schema.')
-        ;
-    }
+    protected static $defaultName = 'app:database:import';
 }
 ```
 
@@ -39,15 +30,4 @@ services:
         tags:
             - {name: doctrine.event_listener, event: postGenerateSchema }
 
-```
-
-## Configuration
-
-`config.yml`
-
-```yml
-mikoweb_db_first_helper:
-    bundle_directory: src/App/DatabaseBundle
-    bundle_name:      AppDatabaseBundle
-    bundle_namespace: App\DatabaseBundle
 ```
