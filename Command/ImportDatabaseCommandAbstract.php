@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) Rafał Mikołajun <rafal@mikoweb.pl>
+ * (c) Rafał Mikołajun <root@rmweb.pl>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,6 +9,7 @@
 
 namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 
+use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Import database schema.
  *
- * @author Rafał Mikołajun <rafal@mikoweb.pl>
+ * @author Rafał Mikołajun <root@mikoweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
 abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
@@ -28,61 +29,38 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $directory = $this->getBundleDirectory();
-        $fs = new Filesystem();
-        $entityDir = $directory . '/Entity';
-        $tableDir = $directory . '/Table';
-
-        if ($fs->exists($entityDir)) {
-            $fs->rename($entityDir, $entityDir . '_backup');
+        if ($this->isForceUpdate()) {
+            $fs = new Filesystem();
+            $fs->remove($this->getEntityPath());
         }
 
-        $fs->remove($tableDir);
-
         $import = $this->getApplication()->find('doctrine:mapping:import');
+
         $returnCode = $import->run(new ArrayInput([
             'command' => 'doctrine:mapping:import',
-            'bundle' => $this->getBundleName(),
+            'name' => $this->getEntityNamespace(),
             'mapping-type' => 'annotation',
-            '--force' => true,
+            '--path' => $this->getEntityPath(),
+            '--force' => $this->isForceUpdate(),
+            '--em' => $this->getConnection(),
         ]), $output);
 
         if ($returnCode !== 0) {
             throw new \RuntimeException('Import fail.');
         }
 
-        $fs->rename($entityDir, $tableDir);
-
-        if ($fs->exists($entityDir . '_backup')) {
-            $fs->rename($entityDir . '_backup', $entityDir);
-        }
-
-        foreach (glob($tableDir . '/*.php') as $fileName) {
+        foreach (glob($this->getEntityPath() . '/*.php') as $fileName) {
             $content = file_get_contents($fileName);
-            $content = str_replace(
-                'namespace ' . $this->getBundleNamespace() . '\Entity',
-                'namespace ' . $this->getBundleNamespace() . '\Table',
-                $content
-            );
-
             $content = str_replace(
                 'private $',
                 'protected $',
                 $content
             );
 
-            $content = str_replace(
-                'targetEntity="',
-                'targetEntity="' . $this->getBundleNamespace() . '\\Entity\\',
-                $content
-            );
-
-            $content = $this->transformClassContent($content);
-
-            file_put_contents($fileName, $content);
+            file_put_contents($fileName, $this->transformClassContent($content));
         }
 
-        $this->doAfterImport($entityDir, $tableDir);
+        $this->doAfterImport();
         $output->writeln('<info>Import complete.</info>');
     }
 
@@ -93,43 +71,67 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
      *
      * @return string
      */
-    protected function transformClassContent($content)
+    protected function transformClassContent(string $content): string
     {
         return $content;
     }
 
     /**
      * You can do something after import.
-     *
-     * @param string $entityDir
-     * @param string $tableDir
      */
-    protected function doAfterImport($entityDir, $tableDir)
+    protected function doAfterImport(): void
     {
     }
 
-    /**
-     * @return string
-     */
-    protected function getBundleDirectory()
+    protected function getParameter(string $name)
     {
-        return $this->getContainer()->get('kernel')->getRootDir() . '/../'
-            . $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_directory');
+        return $this->getContainer()->getParameter(Configuration::ROOT_NAME . '.' . $name);
     }
 
-    /**
-     * @return string
-     */
-    protected function getBundleName()
+    protected function getBasePath(): string
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_name');
+        return $this->getParameter('base_path');
     }
 
-    /**
-     * @return string
-     */
-    protected function getBundleNamespace()
+    protected function getPath(string $path): string
     {
-        return $this->getContainer()->getParameter('mikoweb_db_first_helper.bundle_namespace');
+        return "{$this->getBasePath()}/$path";
+    }
+
+    protected function getFullPath(string $path): string
+    {
+        return "{$this->getContainer()->get('kernel')->getRootDir()}/../{$this->getPath($path)}";
+    }
+
+    protected function getBaseNamespace(): string
+    {
+        return $this->getParameter('base_namespace');
+    }
+
+    protected function getEntityFolder(): string
+    {
+        return $this->getParameter('entity_folder');
+    }
+
+    protected function getEntityPath(): string
+    {
+        return $this->getFullPath($this->getEntityFolder());
+    }
+
+    protected function getEntityNamespace(): string
+    {
+        $path = str_replace('/', '\\', $this->getEntityFolder());
+
+        return "{$this->getBaseNamespace()}\\$path";
+    }
+
+    protected function isForceUpdate(): bool
+    {
+        return $this->getParameter('force_update');
+    }
+
+    protected function getConnection(): string
+    {
+        return $this->getParameter('connection');
     }
 }

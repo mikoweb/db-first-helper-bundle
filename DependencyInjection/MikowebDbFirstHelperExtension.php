@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) Rafał Mikołajun <rafal@mikoweb.pl>
+ * (c) Rafał Mikołajun <root@rmweb.pl>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Loader;
 /**
  * DbFirstHelper Extension.
  *
- * @author Rafał Mikołajun <rafal@mikoweb.pl>
+ * @author Rafał Mikołajun <root@rmweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
 class MikowebDbFirstHelperExtension extends Extension
@@ -29,9 +29,13 @@ class MikowebDbFirstHelperExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $container->setParameter('mikoweb_db_first_helper.bundle_directory', $config['bundle_directory']);
-        $container->setParameter('mikoweb_db_first_helper.bundle_name', $config['bundle_name']);
-        $container->setParameter('mikoweb_db_first_helper.bundle_namespace', $config['bundle_namespace']);
+        $root = Configuration::ROOT_NAME;
+
+        $container->setParameter("$root.base_path", $config['base_path']);
+        $container->setParameter("$root.entity_folder", $config['entity_folder']);
+        $container->setParameter("$root.base_namespace", $config['base_namespace']);
+        $container->setParameter("$root.force_update", $config['force_update']);
+        $container->setParameter("$root.connection", $config['connection']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
