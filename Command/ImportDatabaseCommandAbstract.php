@@ -10,6 +10,8 @@
 namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 
 use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
+use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\GettersSettersTransformer;
+use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PrivateTransformer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,11 +53,12 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
 
         foreach (glob($this->getEntityPath() . '/*.php') as $fileName) {
             $content = file_get_contents($fileName);
-            $content = str_replace(
-                'private $',
-                'protected $',
-                $content
-            );
+            $content = (new PrivateTransformer($content))->transform();
+
+            if ($this->getParameter('generate_getters_setters')) {
+                $content = (new GettersSettersTransformer($content, $fileName, $this->getEntityNamespace()))
+                    ->transform();
+            }
 
             file_put_contents($fileName, $this->transformClassContent($content));
         }
