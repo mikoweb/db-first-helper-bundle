@@ -35,10 +35,12 @@ class RepositoryGenerator
     public function generate(): void 
     {
         $entityName = pathinfo($this->entityFileName)['filename'];
-        $entityPath = "{$this->entityFolder}/{$entityName}";
+        $entityPath = trim("{$this->entityFolder}/{$entityName}");
 
         if (strpos($entityPath, 'Entity/') === 0) {
             $repositoryPath = preg_replace('/Entity\//', 'Repository/', $entityPath, 1);
+        } elseif ($entityPath === 'Entity' || $entityPath === 'Entity/') {
+            $repositoryPath = 'Repository';
         } else {
             $repositoryPath = "Repository/$entityPath";
         }
