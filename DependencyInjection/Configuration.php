@@ -52,6 +52,9 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('default')
                 ->end()
+                ->booleanNode('generate_getters_setters')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
 
