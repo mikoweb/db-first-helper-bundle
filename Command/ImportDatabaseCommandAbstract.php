@@ -21,7 +21,7 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Import database schema.
  *
- * @author Rafał Mikołajun <root@mikoweb.pl>
+ * @author Rafał Mikołajun <root@rmweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
 abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
