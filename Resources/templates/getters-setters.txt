@@ -1,0 +1,10 @@
+
+    public function get{{methodPart}}(): {{type}}
+    {
+        return $this->{{name}};
+    }
+
+    public function set{{methodPart}}({{type}} ${{name}}): void
+    {
+        $this->{{name}} = ${{name}};
+    }

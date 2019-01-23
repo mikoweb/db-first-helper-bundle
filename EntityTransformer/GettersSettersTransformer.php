@@ -38,13 +38,11 @@ final class GettersSettersTransformer implements EntityTransformerInterface
         $className = $this->entityNamespace . '\\' . pathinfo($this->fileName)['filename'];
         require_once $this->fileName;
         $reflection = new \ReflectionClass($className);
+        $code = '';
 
         foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE)
                  as $property
         ) {
-            // TODO WIP
-            dump($property->getName());
-
             preg_match('/@var\s+(.*)/', $property->getDocComment(), $matches);
 
             if (count($matches) === 2) {
@@ -66,14 +64,20 @@ final class GettersSettersTransformer implements EntityTransformerInterface
                     $type = null;
                 }
 
-                // TODO WIP
-                dump($type);
-                dump($nullable);
-                dump($types);
-                dump('----------------------------');
+                $template = file_get_contents(__DIR__ . '/../Resources/templates/getters-setters.txt');
+
+                $code .= str_replace([
+                    '{{name}}',
+                    '{{type}}',
+                    '{{methodPart}}',
+                ], [
+                    $property->getName(),
+                    $nullable ? "?{$type}" : $type,
+                    ucfirst($property->getName()),
+                ], $template);
             }
         }
 
-        return $this->code;
+        return trim(substr($this->code, 0, strrpos($this->code, '}'))) . "\n" . $code . "}\n";
     }
 }
