@@ -55,6 +55,9 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('generate_getters_setters')
                     ->defaultTrue()
                 ->end()
+                ->booleanNode('make_repositories')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
 

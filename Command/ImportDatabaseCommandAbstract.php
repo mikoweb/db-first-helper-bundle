@@ -9,6 +9,7 @@
 
 namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 
+use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\RepositoryGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\GettersSettersTransformer;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PrivateTransformer;
@@ -21,7 +22,7 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Import database schema.
  *
- * @author Rafał Mikołajun <root@rmweb.pl>
+ * @author Rafał Mikołajun <root@mikoweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
 abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
@@ -61,6 +62,10 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
             }
 
             file_put_contents($fileName, $this->transformClassContent($content));
+
+            if ($this->getParameter('make_repositories')) {
+                $this->makeRepository($fileName);
+            }
         }
 
         $this->doAfterImport();
@@ -136,5 +141,12 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
     protected function getConnection(): string
     {
         return $this->getParameter('connection');
+    }
+
+    protected function makeRepository(string $entityFileName): void
+    {
+        (new RepositoryGenerator($entityFileName, $this->getEntityFolder(), 
+            $this->getFullPath(''), $this->getEntityNamespace()))
+            ->generate();
     }
 }

@@ -1,0 +1,21 @@
+<?php
+
+namespace {{repositoryNamespace}};
+
+use {{entityImport}};
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+
+/**
+ * @method {{entityName}}|null find($id, $lockMode = null, $lockVersion = null)
+ * @method {{entityName}}|null findOneBy(array $criteria, array $orderBy = null)
+ * @method {{entityName}}[]    findAll()
+ * @method {{entityName}}[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class {{repositoryClass}} extends ServiceEntityRepository
+{
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, {{entityName}}::class);
+    }
+}
