@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * (c) Rafał Mikołajun <root@rmweb.pl>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator;
 
 class RepositoryGenerator
@@ -32,7 +39,7 @@ class RepositoryGenerator
         $this->entityNamespace = $entityNamespace;
     }
 
-    public function generate(): void 
+    public function generate(): void
     {
         $entityName = pathinfo($this->entityFileName)['filename'];
         $entityPath = trim("{$this->entityFolder}/{$entityName}");
@@ -47,7 +54,7 @@ class RepositoryGenerator
 
         $repositoryPath .= 'Repository';
         $repositoryFileName = "{$this->basePath}{$repositoryPath}.php";
-        
+
         if (!file_exists($repositoryFileName)) {
             $repositoryNamespace = 'App';
             $repositoryClass = pathinfo($repositoryFileName)['filename'];
