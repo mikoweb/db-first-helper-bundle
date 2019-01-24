@@ -12,6 +12,7 @@ namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\ExtendedEntityGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\RepositoryGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
+use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\ClassToAbstractTransformer;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\GettersSettersTransformer;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PrivateTransformer;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -72,6 +73,10 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
             if ($this->isGenerateGettersSetters()) {
                 $content = (new GettersSettersTransformer($content, $fileName, $entityNamespace))
                     ->transform();
+            }
+
+            if ($this->isExtendedEntities()) {
+                $content = (new ClassToAbstractTransformer($content))->transform();
             }
 
             file_put_contents($fileName, $this->transformClassContent($content));
