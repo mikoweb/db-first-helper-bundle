@@ -14,6 +14,7 @@ use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\RepositoryGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\ClassToAbstractTransformer;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\GettersSettersTransformer;
+use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PostgresUUIDTransformer;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PrivateTransformer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -69,6 +70,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
         foreach (glob($entityPath . '/*.php') as $fileName) {
             $content = file_get_contents($fileName);
             $content = (new PrivateTransformer($content))->transform();
+            $content = (new PostgresUUIDTransformer($content))->transform();
 
             if ($this->isGenerateGettersSetters()) {
                 $content = (new GettersSettersTransformer($content, $fileName, $entityNamespace))
