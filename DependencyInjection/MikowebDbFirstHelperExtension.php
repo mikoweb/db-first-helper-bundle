@@ -38,6 +38,7 @@ class MikowebDbFirstHelperExtension extends Extension
         $container->setParameter("$root.connection", $config['connection']);
         $container->setParameter("$root.generate_getters_setters", $config['generate_getters_setters']);
         $container->setParameter("$root.make_repositories", $config['make_repositories']);
+        $container->setParameter("$root.extended_entities", $config['extended_entities']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

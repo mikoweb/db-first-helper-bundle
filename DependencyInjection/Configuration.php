@@ -58,6 +58,9 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('make_repositories')
                     ->defaultTrue()
                 ->end()
+                ->booleanNode('extended_entities')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
 

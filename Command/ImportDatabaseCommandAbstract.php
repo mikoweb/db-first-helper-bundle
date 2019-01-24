@@ -9,6 +9,7 @@
 
 namespace Mikoweb\Bundle\DbFirstHelperBundle\Command;
 
+use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\ExtendedEntityGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\CodeGenerator\RepositoryGenerator;
 use Mikoweb\Bundle\DbFirstHelperBundle\DependencyInjection\Configuration;
 use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\GettersSettersTransformer;
@@ -32,18 +33,30 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $entityPath = $this->getEntityPath();
+        $entityNamespace = $this->getEntityNamespace();
+
+        if ($this->isExtendedEntities()) {
+            if ($entityPath[strlen($entityPath) -1] === '/') {
+                $entityPath = substr($entityPath, 0, -1);
+            }
+
+            $entityPath .= 'Base';
+            $entityNamespace .= 'Base';
+        }
+
         if ($this->isForceUpdate()) {
             $fs = new Filesystem();
-            $fs->remove($this->getEntityPath());
+            $fs->remove($entityPath);
         }
 
         $import = $this->getApplication()->find('doctrine:mapping:import');
 
         $returnCode = $import->run(new ArrayInput([
             'command' => 'doctrine:mapping:import',
-            'name' => $this->getEntityNamespace(),
+            'name' => $entityNamespace,
             'mapping-type' => 'annotation',
-            '--path' => $this->getEntityPath(),
+            '--path' => $entityPath,
             '--force' => $this->isForceUpdate(),
             '--em' => $this->getConnection(),
         ]), $output);
@@ -52,19 +65,23 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
             throw new \RuntimeException('Import fail.');
         }
 
-        foreach (glob($this->getEntityPath() . '/*.php') as $fileName) {
+        foreach (glob($entityPath . '/*.php') as $fileName) {
             $content = file_get_contents($fileName);
             $content = (new PrivateTransformer($content))->transform();
 
-            if ($this->getParameter('generate_getters_setters')) {
-                $content = (new GettersSettersTransformer($content, $fileName, $this->getEntityNamespace()))
+            if ($this->isGenerateGettersSetters()) {
+                $content = (new GettersSettersTransformer($content, $fileName, $entityNamespace))
                     ->transform();
             }
 
             file_put_contents($fileName, $this->transformClassContent($content));
 
-            if ($this->getParameter('make_repositories')) {
+            if ($this->isMakeRepositories()) {
                 $this->makeRepository($fileName);
+            }
+
+            if ($this->isExtendedEntities()) {
+                $this->makeExtendedEntity($fileName, $entityNamespace);
             }
         }
 
@@ -143,10 +160,32 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
         return $this->getParameter('connection');
     }
 
+    protected function isGenerateGettersSetters(): bool
+    {
+        return $this->getParameter('generate_getters_setters');
+    }
+
+    protected function isMakeRepositories(): bool
+    {
+        return $this->getParameter('make_repositories');
+    }
+
+    protected function isExtendedEntities(): bool
+    {
+        return $this->getParameter('extended_entities');
+    }
+
     protected function makeRepository(string $entityFileName): void
     {
         (new RepositoryGenerator($entityFileName, $this->getEntityFolder(), 
             $this->getFullPath(''), $this->getEntityNamespace()))
+            ->generate();
+    }
+
+    protected function makeExtendedEntity(string $entityFileName, string $baseNamespace): void
+    {
+        (new ExtendedEntityGenerator($entityFileName, $this->getEntityFolder(),
+            $this->getFullPath(''), $this->getEntityNamespace(), $baseNamespace))
             ->generate();
     }
 }

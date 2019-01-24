@@ -1,0 +1,13 @@
+<?php
+
+namespace {{entityNamespace}};
+
+use {{baseImport}} as BaseEntity;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ */
+class {{entityName}} extends BaseEntity
+{
+}
