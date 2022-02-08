@@ -19,7 +19,8 @@ use Mikoweb\Bundle\DbFirstHelperBundle\EntityTransformer\PrivateTransformer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -28,8 +29,19 @@ use Symfony\Component\Filesystem\Filesystem;
  * @author Rafał Mikołajun <root@mikoweb.pl>
  * @package mikoweb/db-first-helper-bundle
  */
-abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
+abstract class AbstractImportDatabaseCommand extends Command
 {
+    /**
+     * @var ParameterBagInterface
+     */
+    protected $paramterBag;
+
+    public function __construct(ParameterBagInterface $paramterBag)
+    {
+        parent::__construct();
+        $this->paramterBag = $paramterBag;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -117,7 +129,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
 
     protected function getParameter(string $name)
     {
-        return $this->getContainer()->getParameter(Configuration::ROOT_NAME . '.' . $name);
+        return $this->paramterBag->get(Configuration::ROOT_NAME . '.' . $name);
     }
 
     protected function getBasePath(): string
@@ -132,7 +144,7 @@ abstract class ImportDatabaseCommandAbstract extends ContainerAwareCommand
 
     protected function getFullPath(string $path): string
     {
-        return "{$this->getContainer()->get('kernel')->getRootDir()}/../{$this->getPath($path)}";
+        return "{$this->getParameter('kernel.project_dir')}/{$this->getPath($path)}";
     }
 
     protected function getBaseNamespace(): string

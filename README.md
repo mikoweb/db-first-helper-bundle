@@ -13,9 +13,9 @@ Create command class inside your bundle, eg.
 ```php
 namespace App\Command;
 
-use Mikoweb\Bundle\DbFirstHelperBundle\Command\ImportDatabaseCommandAbstract;
+use Mikoweb\Bundle\DbFirstHelperBundle\Command\AbstractImportDatabaseCommand;
 
-class DatabaseImportCommand extends ImportDatabaseCommandAbstract
+class DatabaseImportCommand extends AbstractImportDatabaseCommand
 {
     protected static $defaultName = 'app:database:import';
 }
