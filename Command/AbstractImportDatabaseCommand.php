@@ -144,7 +144,7 @@ abstract class AbstractImportDatabaseCommand extends Command
 
     protected function getFullPath(string $path): string
     {
-        return "{$this->getParameter('kernel.project_dir')}/{$this->getPath($path)}";
+        return "{$this->paramterBag->get('kernel.project_dir')}/{$this->getPath($path)}";
     }
 
     protected function getBaseNamespace(): string
