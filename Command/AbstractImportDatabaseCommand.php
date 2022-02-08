@@ -45,7 +45,7 @@ abstract class AbstractImportDatabaseCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $entityPath = $this->getEntityPath();
         $entityNamespace = $this->getEntityNamespace();
@@ -106,6 +106,8 @@ abstract class AbstractImportDatabaseCommand extends Command
 
         $this->doAfterImport();
         $output->writeln('<info>Import complete.</info>');
+
+        return 0;
     }
 
     /**
